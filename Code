@@ -1,0 +1,48 @@
+#include <opencv2/opencv.hpp>
+#include <opencv2/objdetect.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    CascadeClassifier faceCascade;
+
+    if (!faceCascade.load("haarcascade_frontalface_default.xml")) {
+        cout << "Error loading classifier!" << endl;
+        return -1;
+    }
+
+    VideoCapture cap(0);
+
+    if (!cap.isOpened()) {
+        cout << "Cannot access webcam!" << endl;
+        return -1;
+    }
+
+    Mat frame;
+    vector<Rect> faces;
+
+    while (true) {
+        cap >> frame;
+
+        if (frame.empty())
+            break;
+
+        faceCascade.detectMultiScale(frame, faces);
+
+        for (int i = 0; i < faces.size(); i++) {
+            rectangle(frame, faces[i], Scalar(255, 0, 0), 2);
+        }
+
+        imshow("Face Detection System", frame);
+
+        if (waitKey(30) == 27)
+            break;
+    }
+
+    cap.release();
+    destroyAllWindows();
+
+    return 0;
+}
